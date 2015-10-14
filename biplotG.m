@@ -1,10 +1,10 @@
 function h = biplotG(loadings, scores, varargin)
-% BIPLOTG is an alternative to Statistics Toolbox 'biplot' that is able to 
-% show scores in different colors (groups)
-% Unlike 'biplot', it is only able to plot 2 components (2D) and does not 
-% impose any sign convention (loadings and scores are never flipped). The 
-% input of scores is also different (see below). It is much faster than 
-% biplot for big datasets
+% BIPLOTG is an alternative to Statistics and Machine Learning Toolbox's 
+% 'biplot' that is able to show scores in different colors (groups).
+% Unlike 'biplot', 'biplotG' is only able to plot 2 components (2D) and 
+% does not impose any sign convention (loadings and scores are never 
+% flipped). The input of scores is also different (see below). It is much 
+% faster than 'biplot' for big datasets.
 %
 % SYNTAX:  
 %    biplotG(loadings, scores)
@@ -31,10 +31,10 @@ function h = biplotG(loadings, scores, varargin)
 %
 % EXAMPLES:
 %
-%    load iris_dataset
-%    data = irisInputs';
+%    load fisheriris
+%    data = meas;
 %    labels = {'Sepal length' 'Sepal width' 'Petal length' 'Petal width'};
-%    groups = [1 2 3]*irisTargets;
+%    groups = species;
 %    [loadings, scores] = pca(zscore(data));
 %
 %    % simple biplot
@@ -48,13 +48,16 @@ function h = biplotG(loadings, scores, varargin)
 %    biplotG(loadings, scores, 'Groups', groups, 'Format' , format)
 %
 %
-% See also: biplot, pca
+% Requires: Statistics and Machine Learning Toolbox 
+%
+% See also: biplot, pca, fisherisis
 %
 % Copyright (c) 2015, Ines Azevedo Isidro
 
+
 % Version history:
-% 2015.07.31 by Ines A Isidro: function created
-% 2015.10.09 by Ines A Isidro: added examples for iris data set
+% 2015.07.31 by Inês A Isidro: function created
+% 2015.10.09 by Inês A Isidro: added examples for iris data set
 
 %------------- BEGIN CODE --------------
 
@@ -127,11 +130,15 @@ if ~isempty(scores)
     % according to the sign convention for the coefs  ... why ???
     
     % plot each group with its format options
-    groupID = unique(opts.groups); % can be numbers or letters
+    groupID = unique(opts.groups); % can be numbers or cell of strings
     ngroups = length(groupID);
     hscores = NaN(ngroups,1);
     for igroup = 1:ngroups
-        idx = (opts.groups == groupID(igroup));
+        if iscell(opts.groups)
+            idx = strcmp(groupID(igroup), opts.groups);
+        else
+            idx = (opts.groups == groupID(igroup));
+        end
         hs = plot(scores(idx,1), scores(idx,2), 'o');
         set(hs, opts.format{igroup}{:})
         hscores(igroup) = hs;
